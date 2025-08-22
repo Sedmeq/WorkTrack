@@ -73,6 +73,19 @@ namespace DataAccessLayer.Migrations
                     b.HasIndex("WorkScheduleId");
 
                     b.ToTable("Employees");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("11111111-1111-1111-1111-111111111111"),
+                            CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Email = "admin@company.com",
+                            PasswordHash = "AQAAAAIAAYagAAAAEI/1Yw/p4Jlv//3+A9y5St7jH8Dkdi3QhBYJ13d5u94aTeB3pY/dnmx3M9pGLi+D8Q==",
+                            Phone = "000000000",
+                            RoleId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
+                            Salary = 0m,
+                            Username = "Admin"
+                        });
                 });
 
             modelBuilder.Entity("Models.Models.Entities.EmployeeTimeLog", b =>

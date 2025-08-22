@@ -52,19 +52,14 @@ namespace BusinessLogicLayer.Service
         }
 
         /// <summary>
-        /// Role ID müəyyən edir: əgər bossId verilmişsə, Boss rolu veriləcək
+        /// Bu metod sadəcə verilən rolu geri qaytarır.
+        /// Köhnə məntiq (bossId varsa Boss rolu ver) aradan qaldırıldı.
         /// </summary>
-        public async Task<Guid?> DetermineRoleIdAsync(Guid? selectedRoleId, Guid? bossId)
+        public Task<Guid?> DetermineRoleIdAsync(Guid? selectedRoleId, Guid? bossId)
         {
-            // Əgər bossId verilmişsə, avtomatik Boss rolu veriləcək
-            if (bossId.HasValue)
-            {
-                var bossRole = await GetBossRoleAsync();
-                return bossRole?.Id;
-            }
-
-            // Əks halda, seçilmiş role ID qayıdılacaq
-            return selectedRoleId;
+            // Artıq bossId-yə görə rol dəyişdirilmir.
+            // Sadəcə seçilən rol geri qaytarılır.
+            return Task.FromResult(selectedRoleId);
         }
     }
 }

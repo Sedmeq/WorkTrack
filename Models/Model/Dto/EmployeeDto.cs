@@ -1,7 +1,8 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿    using System.ComponentModel.DataAnnotations;
 
 namespace EmployeeAdminPortal.Models.Dto
 {
+    
     public class EmployeeDto
     {
         [Required]
@@ -24,11 +25,15 @@ namespace EmployeeAdminPortal.Models.Dto
         [Range(0, double.MaxValue)]
         public decimal Salary { get; set; }
 
+        /// <summary>
+        /// Seçilmiş role ID - birbaşa təyin edilir
+        /// </summary>
         public Guid? RoleId { get; set; }
+
         public Guid? WorkScheduleId { get; set; }
 
         /// <summary>
-        /// Boss ID qeyd edilərsə, avtomatik Boss rolu veriləcək
+        /// Bu employee-in boss-unun ID-si (opsional)
         /// </summary>
         public Guid? BossId { get; set; }
     }

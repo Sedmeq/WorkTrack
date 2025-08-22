@@ -9,15 +9,25 @@ namespace BusinessLogicLayer.Mappings
     {
         public MappingProfile()
         {
-            // Entity -> DTO
+            // Entity -> DTO (Response)
             CreateMap<Employee, EmployeeResponseDto>()
                 .ForMember(dest => dest.RoleName, opt => opt.MapFrom(src => src.Role != null ? src.Role.Name : null))
                 .ForMember(dest => dest.WorkScheduleName, opt => opt.MapFrom(src => src.WorkSchedule != null ? src.WorkSchedule.Name : null))
                 .ForMember(dest => dest.WorkStartTime, opt => opt.MapFrom(src => src.WorkSchedule != null ? src.WorkSchedule.StartTime.ToString(@"hh\:mm") : null))
                 .ForMember(dest => dest.WorkEndTime, opt => opt.MapFrom(src => src.WorkSchedule != null ? src.WorkSchedule.EndTime.ToString(@"hh\:mm") : null));
 
-            // DTO -> Entity
-            CreateMap<EmployeeDto, Employee>();
+            // DTO -> Entity (Create/Update)
+            CreateMap<EmployeeDto, Employee>()
+                .ForMember(dest => dest.Id, opt => opt.Ignore()) // Id auto-generate olur
+                .ForMember(dest => dest.PasswordHash, opt => opt.Ignore()) // Ayrıca hash edilir
+                .ForMember(dest => dest.CreatedAt, opt => opt.Ignore()) // Manually set edilir
+                .ForMember(dest => dest.UpdatedAt, opt => opt.Ignore()) // Manually set edilir
+                .ForMember(dest => dest.Role, opt => opt.Ignore()) // Navigation property
+                .ForMember(dest => dest.WorkSchedule, opt => opt.Ignore()) // Navigation property
+                .ForMember(dest => dest.TimeLogs, opt => opt.Ignore()) // Navigation property
+                .ForMember(dest => dest.ManagedRoles, opt => opt.Ignore()) // Navigation property
+                .ForMember(dest => dest.Boss, opt => opt.Ignore()) // Navigation property
+                .ForMember(dest => dest.Subordinates, opt => opt.Ignore()); // Navigation property
         }
     }
 }

@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace DataAccessLayer.Migrations
 {
     /// <inheritdoc />
-    public partial class NewMigration2 : Migration
+    public partial class SeedInitialData : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -130,6 +130,11 @@ namespace DataAccessLayer.Migrations
                     { new Guid("99999999-9999-9999-9999-999999999993"), "Morning shift 9:00-14:00", new TimeSpan(0, 14, 0, 0, 0), true, 10, 300, "9-14", 5, new TimeSpan(0, 9, 0, 0, 0) },
                     { new Guid("99999999-9999-9999-9999-999999999994"), "Afternoon shift 14:00-18:00", new TimeSpan(0, 18, 0, 0, 0), true, 10, 240, "14-18", 4, new TimeSpan(0, 14, 0, 0, 0) }
                 });
+
+            migrationBuilder.InsertData(
+                table: "Employees",
+                columns: new[] { "Id", "BossId", "CreatedAt", "Email", "PasswordHash", "Phone", "RoleId", "Salary", "UpdatedAt", "Username", "WorkScheduleId" },
+                values: new object[] { new Guid("11111111-1111-1111-1111-111111111111"), null, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "admin@company.com", "AQAAAAIAAYagAAAAEI/1Yw/p4Jlv//3+A9y5St7jH8Dkdi3QhBYJ13d5u94aTeB3pY/dnmx3M9pGLi+D8Q==", "000000000", new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"), 0m, null, "Admin", null });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Employees_BossId",

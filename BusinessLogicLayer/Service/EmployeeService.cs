@@ -6,6 +6,9 @@ using EmployeeAdminPortal.Models.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Models.Models.Dto;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace BusinessLogicLayer.Service
 {
@@ -15,172 +18,26 @@ namespace BusinessLogicLayer.Service
         private readonly IRoleService _roleService;
         private readonly IMapper _mapper;
 
-        public EmployeeService(ApplicationDbContext context, IRoleService roleService , IMapper mapper)
+        public EmployeeService(ApplicationDbContext context, IRoleService roleService, IMapper mapper)
         {
             _context = context;
             _roleService = roleService;
             _mapper = mapper;
         }
 
-        public async Task<List<EmployeeResponseDto>> GetAllEmployeesAsync()
-        {
-            return await _context.Employees
-                .Include(e => e.Role)
-                .Include(e => e.WorkSchedule)
-                .Select(e => new EmployeeResponseDto
-                {
-                    Id = e.Id,
-                    Username = e.Username,
-                    Email = e.Email,
-                    Phone = e.Phone,
-                    Salary = e.Salary,
-                    RoleId = e.RoleId,
-                    RoleName = e.Role != null ? e.Role.Name : null,
-                    WorkScheduleId = e.WorkScheduleId,
-                    WorkScheduleName = e.WorkSchedule != null ? e.WorkSchedule.Name : null,
-                    WorkStartTime = e.WorkSchedule != null ? e.WorkSchedule.StartTime.ToString(@"hh\:mm") : null,
-                    WorkEndTime = e.WorkSchedule != null ? e.WorkSchedule.EndTime.ToString(@"hh\:mm") : null,
-                    CreatedAt = e.CreatedAt,
-                    UpdatedAt = e.UpdatedAt
-                })
-                .ToListAsync();
-        }
-
-        public async Task<List<EmployeeResponseDto>> GetEmployeesByRoleAsync(Guid roleId)
-        {
-            return await _context.Employees
-                .Include(e => e.Role)
-                .Include(e => e.WorkSchedule)
-                .Where(e => e.RoleId == roleId)
-                .Select(e => new EmployeeResponseDto
-                {
-                    Id = e.Id,
-                    Username = e.Username,
-                    Email = e.Email,
-                    Phone = e.Phone,
-                    Salary = e.Salary,
-                    RoleId = e.RoleId,
-                    RoleName = e.Role != null ? e.Role.Name : null,
-                    WorkScheduleId = e.WorkScheduleId,
-                    WorkScheduleName = e.WorkSchedule != null ? e.WorkSchedule.Name : null,
-                    WorkStartTime = e.WorkSchedule != null ? e.WorkSchedule.StartTime.ToString(@"hh\:mm") : null,
-                    WorkEndTime = e.WorkSchedule != null ? e.WorkSchedule.EndTime.ToString(@"hh\:mm") : null,
-                    CreatedAt = e.CreatedAt,
-                    UpdatedAt = e.UpdatedAt
-                })
-                .ToListAsync();
-        }
-
-        public async Task<List<EmployeeResponseDto>> GetEmployeesByRoleSuffixAsync(string roleSuffix)
-        {
-            return await _context.Employees
-                .Include(e => e.Role)
-                .Include(e => e.WorkSchedule)
-                .Where(e => e.Role != null && e.Role.Name.EndsWith($"-{roleSuffix}"))
-                .Select(e => new EmployeeResponseDto
-                {
-                    Id = e.Id,
-                    Username = e.Username,
-                    Email = e.Email,
-                    Phone = e.Phone,
-                    Salary = e.Salary,
-                    RoleId = e.RoleId,
-                    RoleName = e.Role != null ? e.Role.Name : null,
-                    WorkScheduleId = e.WorkScheduleId,
-                    WorkScheduleName = e.WorkSchedule != null ? e.WorkSchedule.Name : null,
-                    WorkStartTime = e.WorkSchedule != null ? e.WorkSchedule.StartTime.ToString(@"hh\:mm") : null,
-                    WorkEndTime = e.WorkSchedule != null ? e.WorkSchedule.EndTime.ToString(@"hh\:mm") : null,
-                    CreatedAt = e.CreatedAt,
-                    UpdatedAt = e.UpdatedAt
-                })
-                .ToListAsync();
-        }
-
-        //public async Task<List<EmployeeResponseDto>> GetSubordinateEmployeesAsync(Guid bossId)
-        //{
-        //    var managedRoles = await _context.Roles
-        //        .Where(r => r.BossId == bossId)
-        //        .Select(r => r.Id)
-        //        .ToListAsync();
-
-        //    return await _context.Employees
-        //        .Include(e => e.Role)
-        //        .Include(e => e.WorkSchedule)
-        //        .Where(e => e.RoleId.HasValue && managedRoles.Contains(e.RoleId.Value))
-        //        .Select(e => new EmployeeResponseDto
-        //        {
-        //            Id = e.Id,
-        //            Username = e.Username,
-        //            Email = e.Email,
-        //            Phone = e.Phone,
-        //            Salary = e.Salary,
-        //            RoleId = e.RoleId,
-        //            RoleName = e.Role != null ? e.Role.Name : null,
-        //            WorkScheduleId = e.WorkScheduleId,
-        //            WorkScheduleName = e.WorkSchedule != null ? e.WorkSchedule.Name : null,
-        //            WorkStartTime = e.WorkSchedule != null ? e.WorkSchedule.StartTime.ToString(@"hh\:mm") : null,
-        //            WorkEndTime = e.WorkSchedule != null ? e.WorkSchedule.EndTime.ToString(@"hh\:mm") : null,
-        //            CreatedAt = e.CreatedAt,
-        //            UpdatedAt = e.UpdatedAt
-        //        })
-        //        .ToListAsync();
-        //}
-
-        public async Task<EmployeeResponseDto?> GetEmployeeByIdAsync(Guid id)
-        {
-            var employee = await _context.Employees
-                .Include(e => e.Role)
-                .Include(e => e.WorkSchedule)
-                .FirstOrDefaultAsync(e => e.Id == id);
-
-            if (employee == null)
-                return null;
-
-            return new EmployeeResponseDto
-            {
-                Id = employee.Id,
-                Username = employee.Username,
-                Email = employee.Email,
-                Phone = employee.Phone,
-                Salary = employee.Salary,
-                RoleId = employee.RoleId,
-                RoleName = employee.Role?.Name,
-                WorkScheduleId = employee.WorkScheduleId,
-                WorkScheduleName = employee.WorkSchedule?.Name,
-                WorkStartTime = employee.WorkSchedule?.StartTime.ToString(@"hh\:mm"),
-                WorkEndTime = employee.WorkSchedule?.EndTime.ToString(@"hh\:mm"),
-                CreatedAt = employee.CreatedAt,
-                UpdatedAt = employee.UpdatedAt
-            };
-        }
-
         public async Task<EmployeeResponseDto?> AddEmployeeAsync(EmployeeDto employeeDto)
         {
-            var existingEmployee = await _context.Employees
-                .FirstOrDefaultAsync(e => e.Email == employeeDto.Email);
-
-            if (existingEmployee != null)
+            if (await _context.Employees.AnyAsync(e => e.Email == employeeDto.Email))
                 return null;
 
-            // Role ID müəyyən et: əgər bossId verilmişsə, Boss rolu veriləcək
-            var finalRoleId = await _roleService.DetermineRoleIdAsync(employeeDto.RoleId, employeeDto.BossId);
+            if (employeeDto.BossId.HasValue && !await _context.Employees.AnyAsync(e => e.Id == employeeDto.BossId.Value))
+                return null;
 
-            var employee = new Employee
-            {
-                Username = employeeDto.Username,
-                Email = employeeDto.Email,
-                Phone = employeeDto.Phone,
-                Salary = employeeDto.Salary,
-                RoleId = finalRoleId,
-                WorkScheduleId = employeeDto.WorkScheduleId,
-                PasswordHash = "",
-                CreatedAt = DateTime.Now
-            };
+            var employee = _mapper.Map<Employee>(employeeDto);
 
-            var hashedPassword = new PasswordHasher<Employee>()
-                .HashPassword(employee, employeeDto.Password);
-
-            employee.PasswordHash = hashedPassword;
+            employee.RoleId = await _roleService.DetermineRoleIdAsync(employeeDto.RoleId, employeeDto.BossId);
+            employee.CreatedAt = DateTime.UtcNow;
+            employee.PasswordHash = new PasswordHasher<Employee>().HashPassword(employee, employeeDto.Password);
 
             _context.Employees.Add(employee);
             await _context.SaveChangesAsync();
@@ -190,46 +47,79 @@ namespace BusinessLogicLayer.Service
 
         public async Task<EmployeeResponseDto?> UpdateEmployeeAsync(Guid id, EmployeeDto updatedEmployeeDto)
         {
-            var employee = await _context.Employees.FindAsync(id);
-            if (employee == null)
-                return null;
-
-            if (employee.Email != updatedEmployeeDto.Email)
+            // 1. Mövcud işçini bazadan tapırıq (izləmə aktiv qalır)
+            var employeeToUpdate = await _context.Employees.FirstOrDefaultAsync(e => e.Id == id);
+            if (employeeToUpdate == null)
             {
-                var existingEmployee = await _context.Employees
-                    .FirstOrDefaultAsync(e => e.Email == updatedEmployeeDto.Email && e.Id != id);
-                if (existingEmployee != null)
-                    return null;
+                return null;
             }
 
-            // Role ID müəyyən et: əgər bossId verilmişsə, Boss rolu veriləcək
-            var finalRoleId = await _roleService.DetermineRoleIdAsync(updatedEmployeeDto.RoleId, updatedEmployeeDto.BossId);
+            // Email-in başqası tərəfindən istifadə olunmadığını yoxlayırıq
+            if (employeeToUpdate.Email != updatedEmployeeDto.Email && await _context.Employees.AnyAsync(e => e.Email == updatedEmployeeDto.Email && e.Id != id))
+            {
+                return null;
+            }
 
-            employee.Username = updatedEmployeeDto.Username;
-            employee.Email = updatedEmployeeDto.Email;
-            employee.Phone = updatedEmployeeDto.Phone;
-            employee.Salary = updatedEmployeeDto.Salary;
-            employee.RoleId = finalRoleId;
-            employee.WorkScheduleId = updatedEmployeeDto.WorkScheduleId;
-            employee.UpdatedAt = DateTime.Now;
+            // BossId-nin mövcud olduğunu yoxlayırıq
+            if (updatedEmployeeDto.BossId.HasValue && !await _context.Employees.AnyAsync(e => e.Id == updatedEmployeeDto.BossId.Value))
+            {
+                return null;
+            }
 
+            // Özü özünün rəhbəri ola bilməz
+            if (updatedEmployeeDto.BossId.HasValue && id == updatedEmployeeDto.BossId.Value)
+            {
+                return null;
+            }
+
+            // 2. Yeni obyekt yaratmaq əvəzinə, AutoMapper ilə mövcud obyekti yeniləyirik
+            _mapper.Map(updatedEmployeeDto, employeeToUpdate);
+
+            // Role və digər sahələri təyin edirik
+            employeeToUpdate.RoleId = await _roleService.DetermineRoleIdAsync(updatedEmployeeDto.RoleId, updatedEmployeeDto.BossId);
+            employeeToUpdate.UpdatedAt = DateTime.UtcNow;
+
+            // Şifrə yenilənibsə, hash-i dəyişirik
             if (!string.IsNullOrEmpty(updatedEmployeeDto.Password))
             {
-                var hashedPassword = new PasswordHasher<Employee>()
-                    .HashPassword(employee, updatedEmployeeDto.Password);
-                employee.PasswordHash = hashedPassword;
+                employeeToUpdate.PasswordHash = new PasswordHasher<Employee>().HashPassword(employeeToUpdate, updatedEmployeeDto.Password);
             }
 
+            // 3. Sadəcə dəyişiklikləri yaddaşa veririk. EF hansı sahələrin dəyişdiyini özü bilir.
             await _context.SaveChangesAsync();
-            return await GetEmployeeByIdAsync(employee.Id);
+            return await GetEmployeeByIdAsync(id);
+        }
+
+        // --- Dəyişdirilməmiş digər metodlar ---
+
+        public async Task<List<EmployeeResponseDto>> GetAllEmployeesAsync()
+        {
+            var employees = await _context.Employees.Include(e => e.Role).Include(e => e.WorkSchedule).ToListAsync();
+            return _mapper.Map<List<EmployeeResponseDto>>(employees);
+        }
+
+        public async Task<List<EmployeeResponseDto>> GetEmployeesByRoleAsync(Guid roleId)
+        {
+            var employees = await _context.Employees.Include(e => e.Role).Include(e => e.WorkSchedule).Where(e => e.RoleId == roleId).ToListAsync();
+            return _mapper.Map<List<EmployeeResponseDto>>(employees);
+        }
+
+        public async Task<List<EmployeeResponseDto>> GetSubordinateEmployeesAsync(Guid bossId)
+        {
+            var employees = await _context.Employees.Include(e => e.Role).Include(e => e.WorkSchedule).Where(e => e.BossId == bossId).ToListAsync();
+            return _mapper.Map<List<EmployeeResponseDto>>(employees);
+        }
+
+        public async Task<EmployeeResponseDto?> GetEmployeeByIdAsync(Guid id)
+        {
+            var employee = await _context.Employees.Include(e => e.Role).Include(e => e.WorkSchedule).FirstOrDefaultAsync(e => e.Id == id);
+            return _mapper.Map<EmployeeResponseDto>(employee);
         }
 
         public async Task<bool> DeleteEmployeeAsync(Guid id)
         {
             var employee = await _context.Employees.FindAsync(id);
-            if (employee == null)
-                return false;
-
+            if (employee == null) return false;
             _context.Employees.Remove(employee);
             await _context.SaveChangesAsync();
             return true;
@@ -237,13 +127,9 @@ namespace BusinessLogicLayer.Service
 
         public async Task<Employee?> GetEmployeeEntityByIdAsync(Guid id)
         {
-            return await _context.Employees
-                .Include(e => e.Role)
-                .Include(e => e.WorkSchedule)
-                .FirstOrDefaultAsync(e => e.Id == id);
+            return await _context.Employees.Include(e => e.Role).Include(e => e.WorkSchedule).FirstOrDefaultAsync(e => e.Id == id);
         }
 
-        // Role məlumatları üçün helper methods
         public async Task<List<Models.Models.Entities.Role>> GetAvailableRolesAsync()
         {
             return await _roleService.GetAvailableRolesAsync();
