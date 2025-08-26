@@ -41,7 +41,7 @@ namespace EmployeeAdminPortal.Models.Entities
         public virtual ICollection<EmployeeTimeLog> TimeLogs { get; set; } = new List<EmployeeTimeLog>();
 
         // Bu role-a boss kimi təyin edilmiş role-lar
-        public virtual ICollection<Role> ManagedRoles { get; set; } = new List<Role>();
+        //public virtual ICollection<Role> ManagedRoles { get; set; } = new List<Role>();
 
         // YENİ: Employee-in boss-u
         public virtual Employee? Boss { get; set; }
@@ -49,29 +49,10 @@ namespace EmployeeAdminPortal.Models.Entities
         // YENİ: Bu employee-in subordinate-ları
         public virtual ICollection<Employee> Subordinates { get; set; } = new List<Employee>();
 
-        // Helper methods
+        //// Helper methods
         public bool IsBoss()
         {
             return Role?.Name == "Boss" || (Role?.Name?.StartsWith("Boss-") ?? false);
-        }
-
-        public bool IsMainBoss()
-        {
-            return Role?.Name == "Boss";
-        }
-
-        public bool IsDepartmentBoss()
-        {
-            return Role?.Name?.StartsWith("Boss-") ?? false;
-        }
-
-        public string GetDepartment()
-        {
-            if (Role?.Name?.StartsWith("Boss-") == true)
-            {
-                return Role.Name.Substring(5); // "Boss-" hissəsini sil
-            }
-            return "";
         }
     }
 }

@@ -1,8 +1,7 @@
 ﻿using EmployeeAdminPortal.Models.Entities;
 using Microsoft.EntityFrameworkCore;
+using Models.Model.Entities;
 using Models.Models.Entities;
-using System;
-using Microsoft.AspNetCore.Identity;
 
 namespace DataAccessLayer.Data
 {
@@ -16,6 +15,7 @@ namespace DataAccessLayer.Data
         public DbSet<EmployeeTimeLog> EmployeeTimeLogs { get; set; }
         public DbSet<Role> Roles { get; set; }
         public DbSet<WorkSchedule> WorkSchedules { get; set; }
+        public DbSet<Permission> Permissions { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -45,6 +45,19 @@ namespace DataAccessLayer.Data
                 .WithMany(e => e.TimeLogs)
                 .HasForeignKey(t => t.EmployeeId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            // Yeni Permission və Employee arasındakı əlaqə
+            modelBuilder.Entity<Permission>()
+                .HasOne(l => l.Employee)
+                .WithMany()
+                .HasForeignKey(l => l.EmployeeId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Permission>()
+                .HasOne(l => l.Boss)
+                .WithMany()
+                .HasForeignKey(l => l.BossId)
+                .OnDelete(DeleteBehavior.ClientSetNull);
 
             SeedData(modelBuilder);
         }

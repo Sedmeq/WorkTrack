@@ -140,8 +140,8 @@ namespace EmployeeAdminPortal.Controllers
 
         private string CalculateTotalWorkTime(List<TimeLogDto> timeLogs)
         {
-            var totalMinutes = timeLogs.Where(log => log.WorkDurationInMinutes.HasValue).Sum(log => log.WorkDurationInMinutes.Value);
-            var timeSpan = TimeSpan.FromMinutes(totalMinutes);
+            var totalTicks = timeLogs.Where(log => log.WorkDurationRaw.HasValue).Sum(log => log.WorkDurationRaw.Value.Ticks);
+            var timeSpan = new TimeSpan(totalTicks);
             return $"{(int)timeSpan.TotalHours:D2}:{timeSpan.Minutes:D2}:{timeSpan.Seconds:D2}";
         }
         #endregion

@@ -4,6 +4,7 @@ using DataAccessLayer.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccessLayer.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250825074417_NewMigration")]
+    partial class NewMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -86,43 +89,6 @@ namespace DataAccessLayer.Migrations
                             Salary = 0m,
                             Username = "Admin"
                         });
-                });
-
-            modelBuilder.Entity("Models.Model.Entities.Permission", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("BossId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("EmployeeId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("EndDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Reason")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("StartDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("BossId");
-
-                    b.HasIndex("EmployeeId");
-
-                    b.ToTable("Permissions");
                 });
 
             modelBuilder.Entity("Models.Models.Entities.EmployeeTimeLog", b =>
@@ -332,23 +298,6 @@ namespace DataAccessLayer.Migrations
                     b.Navigation("Role");
 
                     b.Navigation("WorkSchedule");
-                });
-
-            modelBuilder.Entity("Models.Model.Entities.Permission", b =>
-                {
-                    b.HasOne("EmployeeAdminPortal.Models.Entities.Employee", "Boss")
-                        .WithMany()
-                        .HasForeignKey("BossId");
-
-                    b.HasOne("EmployeeAdminPortal.Models.Entities.Employee", "Employee")
-                        .WithMany()
-                        .HasForeignKey("EmployeeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Boss");
-
-                    b.Navigation("Employee");
                 });
 
             modelBuilder.Entity("Models.Models.Entities.EmployeeTimeLog", b =>

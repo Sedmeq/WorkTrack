@@ -1,4 +1,5 @@
-﻿using BusinessLogicLayer.Service;
+﻿// EmployeeSystem/Program.cs
+using BusinessLogicLayer.Service;
 using BusinessLogicLayer.Services;
 using DataAccessLayer.Data;
 using Identity.Services;
@@ -6,6 +7,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using System.Globalization;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -19,6 +21,7 @@ builder.Services.AddControllers()
         options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
         options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
         options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+        options.JsonSerializerOptions.Converters.Add(new CustomDateTimeConverter());
     });
 
 builder.Services.AddAutoMapper(typeof(BusinessLogicLayer.Mappings.MappingProfile));
@@ -104,6 +107,9 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IRoleService, RoleService>(); // Yeni əlavə edilən xidmət
 builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 builder.Services.AddScoped<ITimeLogService, EnhancedTimeLogService>();
+// Yeni LeaveService xidməti əlavə edildi
+builder.Services.AddScoped<IPermissionService, PermissionService>();
+
 
 // CORS configuration
 builder.Services.AddCors(options =>
@@ -190,5 +196,21 @@ public class GlobalExceptionHandlingMiddleware
         });
 
         await context.Response.WriteAsync(jsonResponse);
+    }
+}
+
+// Yeni: Tarix və vaxt formatını idarə etmək üçün custom converter
+public class CustomDateTimeConverter : JsonConverter<DateTime>
+{
+    private const string DateTimeFormat = "dd.MM.yyyy HH:mm:ss";
+
+    public override DateTime Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        return DateTime.ParseExact(reader.GetString()!, DateTimeFormat, CultureInfo.InvariantCulture);
+    }
+
+    public override void Write(Utf8JsonWriter writer, DateTime value, JsonSerializerOptions options)
+    {
+        writer.WriteStringValue(value.ToString(DateTimeFormat));
     }
 }

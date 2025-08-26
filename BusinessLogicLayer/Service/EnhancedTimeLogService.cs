@@ -103,12 +103,6 @@ namespace BusinessLogicLayer.Service
 
             return timeLogs.Select(t => (TimeLogDto)ConvertToEnhancedTimeLogDto(t, t.Employee)).ToList();
         }
-        
-        // Bu metot artık kullanılmayacak, ancak uyumluluk için boş bırakılabilir veya silinebilir.
-        public Task<List<TimeLogDto>> GetTimeLogsByRoleSuffixAsync(string roleSuffix, DateTime? fromDate = null, DateTime? toDate = null)
-        {
-            return Task.FromResult(new List<TimeLogDto>());
-        }
 
         // --- Diğer metotlar (değişiklik yok) ---
         #region Unchanged Methods

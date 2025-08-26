@@ -40,13 +40,6 @@ namespace Models.Models.Entities
         /// </summary>
         public int MaxLatenessMinutes { get; set; } = 15;
 
-        /// <summary>
-        /// Maksimum erkən gedişə icazə (dəqiqələrlə)
-        /// </summary>
-        //public int MaxEarlyLeaveMinutes { get; set; } = 15;
-
-        //public DateTime CreatedAt { get; set; } = DateTime.Now;
-
         public bool IsActive { get; set; } = true;
 
         // Navigation properties
@@ -66,35 +59,5 @@ namespace Models.Models.Entities
                 return time >= StartTime || time <= EndTime;
             }
         }
-
-        //public bool IsLate(TimeSpan checkInTime)
-        //{
-        //    var allowedStartTime = StartTime.Add(TimeSpan.FromMinutes(MaxLatenessMinutes));
-        //    return checkInTime > allowedStartTime;
-        //}
-
-        //public bool IsEarlyLeave(TimeSpan checkOutTime)
-        //{
-        //    var minimumEndTime = EndTime.Subtract(TimeSpan.FromMinutes(MaxEarlyLeaveMinutes));
-        //    return checkOutTime < minimumEndTime;
-        //}
-
-        //public TimeSpan GetLatenessTime(TimeSpan checkInTime)
-        //{
-        //    if (checkInTime > StartTime)
-        //    {
-        //        return checkInTime - StartTime;
-        //    }
-        //    return TimeSpan.Zero;
-        //}
-
-        //public TimeSpan GetEarlyLeaveTime(TimeSpan checkOutTime)
-        //{
-        //    if (checkOutTime < EndTime)
-        //    {
-        //        return EndTime - checkOutTime;
-        //    }
-        //    return TimeSpan.Zero;
-        //}
     }
 }

@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using EmployeeAdminPortal.Models.Dto;
 using EmployeeAdminPortal.Models.Entities;
+using Models.Model.Dto;
+using Models.Model.Entities;
 using Models.Models.Dto;
 
 namespace BusinessLogicLayer.Mappings
@@ -25,9 +27,13 @@ namespace BusinessLogicLayer.Mappings
                 .ForMember(dest => dest.Role, opt => opt.Ignore()) // Navigation property
                 .ForMember(dest => dest.WorkSchedule, opt => opt.Ignore()) // Navigation property
                 .ForMember(dest => dest.TimeLogs, opt => opt.Ignore()) // Navigation property
-                .ForMember(dest => dest.ManagedRoles, opt => opt.Ignore()) // Navigation property
+                //.ForMember(dest => dest.ManagedRoles, opt => opt.Ignore()) // Navigation property
                 .ForMember(dest => dest.Boss, opt => opt.Ignore()) // Navigation property
                 .ForMember(dest => dest.Subordinates, opt => opt.Ignore()); // Navigation property
+
+            // Yeni məzuniyyət müraciəti map-i
+            CreateMap<Permission, PermissionDto>()
+                .ForMember(dest => dest.EmployeeName, opt => opt.MapFrom(src => src.Employee.Username));
         }
     }
 }
