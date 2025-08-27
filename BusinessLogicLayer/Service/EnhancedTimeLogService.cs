@@ -35,7 +35,7 @@ namespace BusinessLogicLayer.Service
             var timeLog = new EmployeeTimeLog
             {
                 EmployeeId = employeeId,
-                CheckInTime = DateTime.Now,
+                CheckInTime = DateTime.UtcNow,
                 Notes = checkInDto.Notes
             };
 
@@ -57,7 +57,7 @@ namespace BusinessLogicLayer.Service
             if (activeSession == null)
                 return null;
 
-            activeSession.CheckOutTime = DateTime.Now;
+            activeSession.CheckOutTime = DateTime.UtcNow;
             activeSession.CalculateWorkDuration();
 
             if (!string.IsNullOrEmpty(checkOutDto.Notes))

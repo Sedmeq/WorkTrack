@@ -45,7 +45,9 @@ namespace BusinessLogicLayer.Service
                 Email = request.Email,
                 //Phone = request.Phone,
                 //Salary = request.Salary,
-                PasswordHash = ""
+                PasswordHash = "",
+                CreatedAt = DateTime.UtcNow 
+
             };
 
             var hashedPassword = new PasswordHasher<Employee>()

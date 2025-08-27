@@ -54,7 +54,7 @@ namespace EmployeeAdminPortal.Controllers
             if (employeeId == null) return Unauthorized("Employee ID not found in token");
             var isCheckedIn = await _timeLogService.IsEmployeeCheckedInAsync(employeeId.Value);
             var activeSession = await _timeLogService.GetActiveSessionAsync(employeeId.Value);
-            return Ok(new { isCheckedIn, activeSession, currentTime = DateTime.Now.ToString("dd.MM.yyyy HH:mm:ss") });
+            return Ok(new { isCheckedIn, activeSession, currentTime = DateTime.UtcNow.ToString("dd.MM.yyyy HH:mm:ss") });
         }
 
         [HttpGet("my-logs")]
