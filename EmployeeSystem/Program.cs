@@ -109,6 +109,8 @@ builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 builder.Services.AddScoped<ITimeLogService, EnhancedTimeLogService>();
 // Yeni LeaveService xidməti əlavə edildi
 builder.Services.AddScoped<IPermissionService, PermissionService>();
+builder.Services.AddScoped<IVacationService, VacationService>(); // Bu sətri əlavə edin
+
 
 
 // CORS configuration

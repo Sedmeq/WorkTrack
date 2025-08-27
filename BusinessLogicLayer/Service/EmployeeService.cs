@@ -5,6 +5,7 @@ using EmployeeAdminPortal.Models.Dto;
 using EmployeeAdminPortal.Models.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Models.Model.Dto;
 using Models.Models.Dto;
 using System;
 using System.Collections.Generic;
@@ -25,6 +26,28 @@ namespace BusinessLogicLayer.Service
             _mapper = mapper;
         }
 
+        // yeni elave ediulen mothod !!!
+        public async Task<VacationBalanceDto?> GetVacationBalanceAsync(Guid employeeId)
+        {
+            var employee = await _context.Employees.FindAsync(employeeId);
+            if (employee == null) return null;
+
+            var daysWorked = (DateTime.UtcNow - employee.CreatedAt).TotalDays;
+            var totalAccruedDays = 30 * (daysWorked / 365.0);
+
+            var vacationsTaken = await _context.Vacations
+                .Where(v => v.EmployeeId == employeeId && v.Status == "Approved")
+                .ToListAsync();
+
+            double daysTaken = vacationsTaken.Sum(v => (v.EndDate - v.StartDate).TotalDays + 1);
+
+            return new VacationBalanceDto
+            {
+                TotalAccruedDays = Math.Round(totalAccruedDays, 1),
+                DaysTaken = Math.Round(daysTaken, 1),
+                RemainingDays = Math.Round(totalAccruedDays - daysTaken, 1)
+            };
+        }
         public async Task<EmployeeResponseDto?> AddEmployeeAsync(EmployeeDto employeeDto)
         {
             if (await _context.Employees.AnyAsync(e => e.Email == employeeDto.Email))
@@ -44,6 +67,8 @@ namespace BusinessLogicLayer.Service
 
             return await GetEmployeeByIdAsync(employee.Id);
         }
+
+
 
         public async Task<EmployeeResponseDto?> UpdateEmployeeAsync(Guid id, EmployeeDto updatedEmployeeDto)
         {

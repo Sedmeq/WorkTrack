@@ -53,6 +53,27 @@ namespace EmployeeAdminPortal.Controllers
             return Ok(new { data = employees, count = employees.Count });
         }
 
+        [HttpGet("{id}/vacation-balance")]
+        public async Task<IActionResult> GetVacationBalance(Guid id)
+        {
+            var currentEmployee = await GetCurrentEmployeeAsync();
+            if (currentEmployee == null) return Unauthorized("Employee not found");
+
+            var targetEmployee = await _employeeService.GetEmployeeEntityByIdAsync(id);
+            if (targetEmployee == null) return NotFound(new { message = "Employee not found" });
+
+            if (!CanAccessEmployeeData(currentEmployee, targetEmployee))
+                return Forbid("Access denied.");
+
+            var balance = await _employeeService.GetVacationBalanceAsync(id);
+            if (balance == null)
+            {
+                return NotFound(new { message = "Could not calculate balance for the employee." });
+            }
+
+            return Ok(new { data = balance });
+        }
+
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(Guid id)
         {

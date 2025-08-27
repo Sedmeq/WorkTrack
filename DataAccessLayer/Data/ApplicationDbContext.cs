@@ -16,6 +16,8 @@ namespace DataAccessLayer.Data
         public DbSet<Role> Roles { get; set; }
         public DbSet<WorkSchedule> WorkSchedules { get; set; }
         public DbSet<Permission> Permissions { get; set; }
+        public DbSet<Vacation> Vacations { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -57,6 +59,18 @@ namespace DataAccessLayer.Data
                 .HasOne(l => l.Boss)
                 .WithMany()
                 .HasForeignKey(l => l.BossId)
+                .OnDelete(DeleteBehavior.ClientSetNull);
+
+            modelBuilder.Entity<Vacation>()
+               .HasOne(v => v.Employee)
+               .WithMany()
+               .HasForeignKey(v => v.EmployeeId)
+               .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Vacation>()
+                .HasOne(v => v.Boss)
+                .WithMany()
+                .HasForeignKey(v => v.BossId)
                 .OnDelete(DeleteBehavior.ClientSetNull);
 
             SeedData(modelBuilder);

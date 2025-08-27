@@ -34,6 +34,9 @@ namespace BusinessLogicLayer.Mappings
             // Yeni məzuniyyət müraciəti map-i
             CreateMap<Permission, PermissionDto>()
                 .ForMember(dest => dest.EmployeeName, opt => opt.MapFrom(src => src.Employee.Username));
-        }
+
+            CreateMap<Vacation, VacationDto>()
+              .ForMember(dest => dest.EmployeeName, opt => opt.MapFrom(src => src.Employee != null ? src.Employee.Username : string.Empty));
+    }
     }
 }
