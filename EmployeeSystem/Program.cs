@@ -26,6 +26,17 @@ builder.Services.AddControllers()
 
 builder.Services.AddAutoMapper(typeof(BusinessLogicLayer.Mappings.MappingProfile));
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend",
+        builder => builder.WithOrigins("http://localhost:3000")
+                          .AllowAnyMethod()
+                          .AllowAnyHeader());
+});
+
+
+
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
@@ -142,7 +153,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 // Enable CORS
-app.UseCors("AllowAll");
+//app.UseCors("AllowAll");
+app.UseCors("AllowFrontend");
 
 // Authentication & Authorization
 app.UseAuthentication();
@@ -154,6 +166,8 @@ app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
 app.MapControllers();
 
 app.Run();
+
+
 
 // Global Exception Handling Middleware
 public class GlobalExceptionHandlingMiddleware
