@@ -16,7 +16,9 @@ namespace BusinessLogicLayer.Mappings
                 .ForMember(dest => dest.RoleName, opt => opt.MapFrom(src => src.Role != null ? src.Role.Name : null))
                 .ForMember(dest => dest.WorkScheduleName, opt => opt.MapFrom(src => src.WorkSchedule != null ? src.WorkSchedule.Name : null))
                 .ForMember(dest => dest.WorkStartTime, opt => opt.MapFrom(src => src.WorkSchedule != null ? src.WorkSchedule.StartTime.ToString(@"hh\:mm") : null))
-                .ForMember(dest => dest.WorkEndTime, opt => opt.MapFrom(src => src.WorkSchedule != null ? src.WorkSchedule.EndTime.ToString(@"hh\:mm") : null));
+                .ForMember(dest => dest.WorkEndTime, opt => opt.MapFrom(src => src.WorkSchedule != null ? src.WorkSchedule.EndTime.ToString(@"hh\:mm") : null))
+                .ForMember(dest => dest.BossId, opt => opt.MapFrom(src => src.BossId))
+                .ForMember(dest => dest.BossName, opt => opt.MapFrom(src => src.Boss != null ? src.Boss.Username : null));
 
             // DTO -> Entity (Create/Update)
             CreateMap<EmployeeDto, Employee>()

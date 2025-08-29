@@ -21,6 +21,8 @@ namespace Models.Models.Dto
         public string? WorkScheduleName { get; set; }
         public string? WorkStartTime { get; set; }
         public string? WorkEndTime { get; set; }
+        public Guid? BossId { get; set; }
+        public string? BossName { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
     }

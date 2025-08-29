@@ -8,6 +8,8 @@ const TimeLogsSection = () => {
   const [myLogs, setMyLogs] = useState([]);
   const [notes, setNotes] = useState('');
   const [bossGrouped, setBossGrouped] = useState([]);
+  const [selectedEmployeeId, setSelectedEmployeeId] = useState('');
+  const [employeeLogs, setEmployeeLogs] = useState([]);
   const [error, setError] = useState('');
 
   const loadData = async () => {
@@ -29,7 +31,20 @@ const TimeLogsSection = () => {
     }
   };
 
+  const loadEmployeeLogs = async (employeeId) => {
+    setEmployeeLogs([]);
+    if (!employeeId) return;
+    try {
+      const res = await axios.get(`${API_BASE}/employee/${employeeId}/logs`);
+      setEmployeeLogs(res.data?.data ?? []);
+    } catch (e) {
+      // surface boss error
+      setError(e.response?.data?.message || 'Failed to load employee logs');
+    }
+  };
+
   useEffect(() => { loadData(); }, []);
+  useEffect(() => { loadEmployeeLogs(selectedEmployeeId); }, [selectedEmployeeId]);
 
   const checkIn = async () => {
     setError('');
@@ -77,10 +92,10 @@ const TimeLogsSection = () => {
         {myLogs.length === 0 ? <div className="no-employees">No logs</div> : (
           <div className="employees-grid">
             {myLogs.map((g) => (
-              <div key={g.Date} className="employee-card">
+              <div key={g.date} className="employee-card">
                 <div className="employee-info">
-                  <h3>{g.Date}</h3>
-                  <p>Total: {g.TotalWorkTime}</p>
+                  <h3>{g.date}</h3>
+                  <p>Total: {g.totalWorkTime}</p>
                 </div>
               </div>
             ))}
@@ -91,17 +106,48 @@ const TimeLogsSection = () => {
       {bossGrouped.length > 0 && (
         <div className="employees-section" style={{ marginTop: 20 }}>
           <h3>Team Logs (Boss)</h3>
+          <div className="add-form" style={{ marginBottom: 12 }}>
+            <select className="form-input" value={selectedEmployeeId} onChange={e => setSelectedEmployeeId(e.target.value)}>
+              <option value="">Select employee to view detailed logs</option>
+              {bossGrouped.map((r) => (
+                <option key={r.employeeId} value={r.employeeId}>{r.employeeName} ({r.roleName})</option>
+              ))}
+            </select>
+          </div>
           <div className="employees-grid">
             {bossGrouped.map((r) => (
-              <div key={r.EmployeeId} className="employee-card">
+              <div key={r.employeeId} className="employee-card">
                 <div className="employee-info">
-                  <h3>{r.EmployeeName}</h3>
-                  <p>Role: {r.RoleName}</p>
-                  <p>Sessions: {r.TotalSessions}, Total: {r.TotalWorkTime}</p>
+                  <h3>{r.employeeName}</h3>
+                  <p>Role: {r.roleName}</p>
+                  <p>Sessions: {r.totalSessions}, Total: {r.totalWorkTime}</p>
                 </div>
               </div>
             ))}
           </div>
+
+          {selectedEmployeeId && (
+            <div style={{ marginTop: 16 }}>
+              <h3>Selected Employee Logs</h3>
+              {employeeLogs.length === 0 ? (
+                <div className="no-employees">No logs</div>
+              ) : (
+                <div className="employees-grid">
+                  {employeeLogs.map((log) => (
+                    <div key={log.id} className="employee-card">
+                      <div className="employee-info">
+                        <h3>{log.employeeName}</h3>
+                        <p>Check-in: {log.checkInTime}</p>
+                        <p>Check-out: {log.checkOutTime || '-'}</p>
+                        <p>Work: {log.workDuration}</p>
+                        {log.notes && <p>Notes: {log.notes}</p>}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
         </div>
       )}
     </div>

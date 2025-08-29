@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using System;
 using System.Globalization;
 using System.Text;
 using System.Text.Json;
@@ -222,7 +223,23 @@ public class CustomDateTimeConverter : JsonConverter<DateTime>
 
     public override DateTime Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
-        return DateTime.ParseExact(reader.GetString()!, DateTimeFormat, CultureInfo.InvariantCulture);
+        var dateString = reader.GetString();
+        if (string.IsNullOrEmpty(dateString))
+            throw new JsonException("Date string cannot be null or empty");
+
+        // Try to parse as custom format first
+        if (DateTime.TryParseExact(dateString, DateTimeFormat, CultureInfo.InvariantCulture, DateTimeStyles.None, out var result))
+        {
+            return result;
+        }
+
+        // If custom format fails, try standard ISO format
+        if (DateTime.TryParse(dateString, CultureInfo.InvariantCulture, DateTimeStyles.None, out result))
+        {
+            return result;
+        }
+
+        throw new JsonException($"Unable to parse date: {dateString}");
     }
 
     public override void Write(Utf8JsonWriter writer, DateTime value, JsonSerializerOptions options)

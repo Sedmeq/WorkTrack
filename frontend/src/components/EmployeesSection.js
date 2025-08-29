@@ -16,6 +16,7 @@ const initialForm = {
 const EmployeesSection = () => {
   const [employees, setEmployees] = useState([]);
   const [roles, setRoles] = useState([]);
+  const [workSchedules, setWorkSchedules] = useState([]);
   const [form, setForm] = useState(initialForm);
   const [editingId, setEditingId] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -29,12 +30,14 @@ const EmployeesSection = () => {
   const loadAll = async () => {
     try {
       setLoading(true);
-      const [empRes, roleRes] = await Promise.all([
+      const [empRes, roleRes, scheduleRes] = await Promise.all([
         axios.get(`${API_BASE}/employee`),
-        axios.get(`${API_BASE}/employee/available-roles`)
+        axios.get(`${API_BASE}/employee/available-roles`),
+        axios.get(`${API_BASE}/workschedule`)
       ]);
       setEmployees(empRes.data?.data ?? []);
       setRoles(roleRes.data?.data ?? []);
+      setWorkSchedules(scheduleRes.data?.data ?? []);
     } catch (e) {
       setError(e.response?.data?.message || 'Failed to load employees');
     } finally {
@@ -142,6 +145,12 @@ const EmployeesSection = () => {
               <option key={r.id} value={r.id}>{r.name}</option>
             ))}
           </select>
+          <select name="workScheduleId" className="form-input" value={form.workScheduleId} onChange={handleChange}>
+            <option value="">Select Work Schedule</option>
+            {workSchedules.map((ws) => (
+              <option key={ws.id} value={ws.id}>{ws.name} ({ws.startTime}-{ws.endTime})</option>
+            ))}
+          </select>
           <button className="add-button" disabled={!canSubmit} onClick={editingId ? updateEmployee : createEmployee}>
             {editingId ? 'Update' : 'Create'}
           </button>
@@ -162,6 +171,12 @@ const EmployeesSection = () => {
                 <div className="employee-info">
                   <h3>{emp.username || emp.name}</h3>
                   <p>{emp.email}</p>
+                  {emp.workScheduleName && (
+                    <p><strong>Work Schedule:</strong> {emp.workScheduleName} ({emp.workStartTime}-{emp.workEndTime})</p>
+                  )}
+                  {emp.roleName && (
+                    <p><strong>Role:</strong> {emp.roleName}</p>
+                  )}
                 </div>
                 <div style={{ display: 'flex', gap: 8 }}>
                   <button className="add-button" onClick={() => startEdit(emp)}>Edit</button>

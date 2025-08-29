@@ -1,11 +1,29 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import { useAuth } from '../contexts/AuthContext';
 
 const API_BASE = 'https://localhost:7139/api/vacation';
 
+// Helper function to safely parse dates from backend
+const parseDate = (dateString) => {
+  if (!dateString) return new Date();
+  
+  // Try to parse as custom format first (dd.MM.yyyy HH:mm:ss)
+  const customFormat = /^(\d{2})\.(\d{2})\.(\d{4}) (\d{2}):(\d{2}):(\d{2})$/.exec(dateString);
+  if (customFormat) {
+    const [, day, month, year, hour, minute, second] = customFormat;
+    return new Date(year, month - 1, day, hour, minute, second);
+  }
+  
+  // Fallback to standard date parsing
+  return new Date(dateString);
+};
+
 const VacationsSection = () => {
+  const { user, loading } = useAuth();
   const [myRequests, setMyRequests] = useState([]);
   const [pending, setPending] = useState([]);
+  const [balance, setBalance] = useState(null);
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [reason, setReason] = useState('');
@@ -19,12 +37,26 @@ const VacationsSection = () => {
       ]);
       setMyRequests(mine.data?.data ?? []);
       setPending(pend.data?.data ?? []);
+      // Load my vacation balance (requires user id)
+      if (user?.id) {
+        try {
+          const bal = await axios.get(`https://localhost:7139/api/employee/${user.id}/vacation-balance`);
+          setBalance(bal.data?.data ?? null);
+        } catch (e) {
+          // If balance cannot be retrieved, do not block other data
+          setBalance(null);
+        }
+      }
     } catch (e) {
       setError(e.response?.data?.message || 'Failed to load vacations');
     }
   };
 
-  useEffect(() => { loadData(); }, []);
+  useEffect(() => {
+    if (!loading) {
+      loadData();
+    }
+  }, [loading, user?.id]);
 
   const submit = async () => {
     setError('');
@@ -52,6 +84,17 @@ const VacationsSection = () => {
       <h2>Vacations</h2>
       {error && <div className="error-message" style={{ marginBottom: 16 }}>{error}</div>}
 
+      {balance && (
+        <div className="add-employee-section" style={{ marginTop: 10 }}>
+          <h3>My Vacation Balance</h3>
+          <div style={{ marginTop: 8 }}>
+            <div><strong>Total Accrued:</strong> {balance.totalAccruedDays}</div>
+            <div><strong>Taken:</strong> {balance.daysTaken}</div>
+            <div><strong>Remaining:</strong> {balance.remainingDays}</div>
+          </div>
+        </div>
+      )}
+
       <div className="add-employee-section" style={{ marginTop: 10 }}>
         <h3>Request Vacation</h3>
         <div className="add-form">
@@ -70,7 +113,7 @@ const VacationsSection = () => {
               <div key={r.id} className="employee-card">
                 <div className="employee-info">
                   <h3>{r.reason || 'No reason'}</h3>
-                  <p>{new Date(r.startDate).toLocaleDateString()} - {new Date(r.endDate).toLocaleDateString()}</p>
+                  <p>{parseDate(r.startDate).toLocaleDateString()} - {parseDate(r.endDate).toLocaleDateString()}</p>
                   <p>Status: {r.status}</p>
                 </div>
               </div>
@@ -87,7 +130,7 @@ const VacationsSection = () => {
               <div key={r.id} className="employee-card">
                 <div className="employee-info">
                   <h3>{r.employeeName}</h3>
-                  <p>{new Date(r.startDate).toLocaleDateString()} - {new Date(r.endDate).toLocaleDateString()}</p>
+                  <p>{parseDate(r.startDate).toLocaleDateString()} - {parseDate(r.endDate).toLocaleDateString()}</p>
                   <p>{r.reason || 'No reason'}</p>
                 </div>
                 <div style={{ display: 'flex', gap: 8 }}>
