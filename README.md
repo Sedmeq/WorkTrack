@@ -63,7 +63,7 @@ The application follows a clean architecture pattern with clear separation of co
 
 #### 1. Clone the Repository
 ```bash
-git clone [https://github.com/Sedmeq/WorkTrack.git]
+git clone https://github.com/Sedmeq/WorkTrack.git
 cd WorkTrack
 ```
 
